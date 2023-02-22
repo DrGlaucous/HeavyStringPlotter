@@ -1,0 +1,68 @@
+To use the wallPlotter kenematic in fluidNC we need to create an option to configure the plotter's anchor spaces manually:
+
+new items in the config file:
+
+bool dynamicAnchors: tell it what config options to use
+int stringReferencePoint: where we halt the plotter at each string length for configuration
+
+
+
+homing process:
+
+1 drive the plotter to where one string is pulled to the length set by the config
+2 extend/restract other string until the plotter just sits vertically
+3 log positions
+4 drive plotter to where the other string is pulled to the length set by the config
+5 extend/restract first string until the ploter just sits vertically
+6 log positions
+
+7 crunch numbers
+
+see https://www.hackster.io/fredrikstridsman/stringent-the-15-wall-plotter-d965ca
+
+d =  horizontal distance between anchors
+l = stringReferencePoint, where we halt the plotter at each measure
+m = extra distance we travelled on one wheel to get from distance A to B
+
+d = sqrt( (l + m)^2 - l^2 )
+(triangle formula, (hyp^2 - opp^2)^1/2 = adj)
+
+
+to set this up, we could:
+create a special G or Mcode to switch between X-Y converted positioning and direct spool positioning
+if dynamicAnchors is found to be true, we will start with direct positioning enabled
+we will have 2 variables that store the status of left and right configuration
+we will not allow the user to leave direct spool positioning until left and right config has been found
+optionally store these values to EEPROM
+
+left position will be [-d/2,0]
+right position will be [d/2,0]
+
+starting coordinates:
+
+____________d____________
+|           |
+|           |
+| L         |
+|           |
+|_ _ _ _ _[0,0]
+
+
+
+as we move in realtime with direct positioning, we will run the back-conversion code
+to update cartesian position as well
+if a left and right config message is sent, we will snap our head to one of the coordinates above
+
+
+
+
+
+
+
+
+
+
+
+
+
+
