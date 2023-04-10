@@ -7,8 +7,7 @@
 
   
 
-![image](https://github.com/DrGlaucous/HeavyPlotter/raw/main/Images/Flintstones.jpg)
-
+![image](https://github.com/DrGlaucous/HeavyStringPlotter/raw/main/Images/Flintstones.jpg)
   
 
 ---
