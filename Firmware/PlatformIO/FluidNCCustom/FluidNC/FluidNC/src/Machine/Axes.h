@@ -40,6 +40,12 @@ namespace Machine {
         int   _numberAxis = 0;
         Axis* _axis[MAX_N_AXIS];
 
+        // NEW: Direct motor control 
+        //tells the kennematics section if motors should be controlled directly or with math.
+        //currently, it is up to each kinematics code to implement this as it sees fit
+        bool _directMotorControl = false;
+
+
         // Some small helpers to find the axis index and axis motor number for a given motor. This
         // is helpful for some motors that need this info, as well as debug information.
         size_t findAxisIndex(const MotorDrivers::MotorDriver* const motor) const;

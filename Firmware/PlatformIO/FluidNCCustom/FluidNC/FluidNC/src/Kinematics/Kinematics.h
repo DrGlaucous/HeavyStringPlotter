@@ -52,6 +52,11 @@ namespace Kinematics {
         void releaseMotors(AxisMask axisMask, MotorMask motors);
         bool limitReached(AxisMask& axisMask, MotorMask& motors, MotorMask limited);
 
+        //AFTER-MARKET Setting passthroughs, trying to be as general as possible
+        bool run_setting_process(int settingNo, int actionNo);
+
+        const char* getName(void);//AFTER-MARKET, returns name() from system
+
     private:
         ::Kinematics::KinematicSystem* _system = nullptr;
     };
@@ -81,6 +86,9 @@ namespace Kinematics {
         void afterParse() override {}
         void group(Configuration::HandlerBase& handler) override {}
         void validate() const override {}
+
+        //AFTER-MARKET Setting passthroughs, trying to be as general as possible
+        virtual bool run_setting_process(int settingNo, int actionNo) {return false;}
 
         // Name of the configurable. Must match the name registered in the cpp file.
         virtual const char* name() const = 0;

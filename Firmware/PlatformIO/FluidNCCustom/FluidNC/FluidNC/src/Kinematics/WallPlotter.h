@@ -35,6 +35,9 @@ namespace Kinematics {
         void group(Configuration::HandlerBase& handler) override;
         void afterParse() override {}
 
+        //AFTER-MARKET Setting passthroughs, trying to be as general as possible
+        bool run_setting_process(int settingNo, int actionNo) override;
+
         // Name of the configurable. Must match the name registered in the cpp file.
         const char* name() const override { return "WallPlotter"; }
 
@@ -43,6 +46,7 @@ namespace Kinematics {
     private:
         void lengths_to_xy(float left_length, float right_length, float& x, float& y);
         void xy_to_lengths(float x, float y, float& left_length, float& right_length);
+
 
         // State
         float zero_left;   //  The left cord offset corresponding to cartesian (0, 0).
@@ -57,11 +61,36 @@ namespace Kinematics {
         int   _right_axis     = 1;
         float _right_anchor_x = 100;
         float _right_anchor_y = 100;
-        float _segment_length = 10;
+        float _segment_length = 1;
 
-        //for dynamic anchors
-        bool _has_dynamic_anchors = false;
+
+        // for take-up spoolings, values are calculated on init
+        //bool _uses_spools = false;
+        //temp input holders, they have to be here or the parser will not update them
+        //float _l_steps_per_rotation = 300;
+        //float _l_diam_min = 60;
+        //float _l_diam_max = 80;
+        //float _r_steps_per_rotation = 300;
+        //float _r_diam_min = 60;
+        //float _r_diam_max = 80;
+        //end temp input holders
+        //float _l_steps_per_mm_min = 400;
+        //float _l_steps_per_mm_max = 300;
+        //float _l_string_max_len = 4000;
+        //float _r_steps_per_mm_min = 400;
+        //float _r_steps_per_mm_max = 300;
+        //float _r_string_max_len = 4000;
+        //void UpdateStepsPerMM(float left_length, float right_length);
+
+
+        ////// for dynamic anchors
+        void CalibrateEdge(bool calibrateLeft);
+        bool _uses_dynamic_anchors = false;
         int _anchor_config_distance = 500;//mm
+        bool _direct_control;
+
+        //store motor location at each homong side
+        //New homing things
 
     };
 }  //  namespace Kinematics

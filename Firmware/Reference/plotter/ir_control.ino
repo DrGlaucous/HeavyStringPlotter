@@ -101,7 +101,7 @@ void readIR()
          currentRightSteps = 200*stepsPerMM;              
 
          lDist = currentLeftSteps/stepsPerMM;
-         disparity = (long)sqrt(lDist*lDist-200L*200L);
+         disparity = (long)sqrt(lDist*lDist-200L*200L);//sqrt((ldistancefinal-ldistanceinitial)^2)
 
          SER_PRINT("Cal: lDist)");
          SER_PRINTLN(lDist);

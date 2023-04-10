@@ -1,28 +1,59 @@
 name: "ESP32 Dev Controller V4"
 board: "WallPlotter ArduinoCNC Shield"
 
+
+
+#about wallPlotter:
+#left_axis: motor ID (convert from X, Y, Z, to 1, 2, 3, etc)
+#left_anchor_x: -428.000 #location of motor from 0,0
+#segment_length: 2.0 #Fine-ness of breaking curves into linear movement
+#
+#this is used if the plotter motors spool up the string instead of pulling it by, overrides steps/mm
+#uses_spools: false
+#left_axis_steps_per_rotation: 200 #steps per 1 rotation of the spool
+#left_axis_diameter_mm_min: 30 #diameter when the spool is empty
+#left_axis_diameter_mm_max: 40 #diameter when the spool is completely wound
+#left_axis_string_length: 4572 #how long the string is when the spool is completely undone
+#
+#This stuff is for the new wallPlotter config, for dynamic anchors
+#uses_dynamic_anchors: false #anchors will change position each time the plotter is set up
+#anchor_config_distance: 500 #distance below each anchor for homing sequence
+
+#may use this, may not...
+#    use_alt_step_calculations: false
+#    left_axis_steps_per_rotation: 3200.00
+#    left_axis_diameter_mm: 30.00
+#    right_axis_steps_per_rotation: 3200.00
+#    right_axis_diameter_mm: 30.00
+
+#old stepspermm 50.92958
+
 kinematics:
   WallPlotter:
     left_axis: 0
-    left_anchor_x: -428.000
-    left_anchor_y: 520.00
+    left_anchor_x: 0.000
+    left_anchor_y: 400.00
     right_axis: 1
-    right_anchor_x: 428.000
-    right_anchor_y: 520.00
-    segment_length: 2.0
+    right_anchor_x: 600.000
+    right_anchor_y: 400.00
+    segment_length: 1.0
+
+    uses_dynamic_anchors: true
+    anchor_config_distance: 400
+
+    
 
 stepping:
   engine: RMT
-  idle_ms: 250
+  idle_ms: 255
   dir_delay_us: 1
-  pulse_us: 10
+  pulse_us: 1
   disable_delay_us: 0
 
 axes:
-  shared_stepper_disable_pin: gpio.13
   
   x:
-    steps_per_mm: 8.250
+    steps_per_mm: 32.45
     max_rate_mm_per_min: 4000
     acceleration_mm_per_sec2: 400
     max_travel_mm: 4000
@@ -33,11 +64,12 @@ axes:
     
     motor0:
       stepstick:
-        direction_pin: gpio.25
-        step_pin: gpio.15
+        direction_pin: gpio.4
+        step_pin: gpio.13
+        disable_pin: gpio.32
 
   y:
-    steps_per_mm: 8.250
+    steps_per_mm: 32.45
     max_rate_mm_per_min: 4000
     acceleration_mm_per_sec2: 400
     max_travel_mm: 4000
@@ -49,8 +81,9 @@ axes:
     motor0:
       limit_all_pin: NO_PIN
       stepstick:
-        direction_pin: gpio.26
-        step_pin: gpio.2
+        direction_pin: gpio.25
+        step_pin: gpio.26
+        disable_pin: gpio.27
 
   # z:
   #   steps_per_mm: 2000
@@ -65,7 +98,7 @@ axes:
   #   motor0:
   #     rc_servo:
   #       pwm_hz: 50
-  #       output_pin: gpio.27
+  #       output_pin: gpio.33
   #       min_pulse_us: 700
   #       max_pulse_us: 2200
 
@@ -75,7 +108,7 @@ spi:
   sck_pin: gpio.18
 
 sdcard:
-  cs_pin: gpio.5
+  cs_pin: gpio.22
   card_detect_pin: NO_PIN
 
 coolant:
@@ -83,7 +116,7 @@ coolant:
   mist_pin:  NO_PIN
         
 probe:
-  pin: gpio.32:low:pu
+  pin: gpio.16:low:pu
 
 # Control pen up/down using a servo that is configured to look like a spindle 
 # A cheap blue 9g chinese servo was used. 
@@ -95,7 +128,7 @@ probe:
 # If you need to invert motion of servo, invert the values for min_pulse_us and max_pulse_us
 besc:
   pwm_hz: 50
-  output_pin: gpio.21
+  output_pin: gpio.33
   enable_pin: NO_PIN
   direction_pin: NO_PIN
   disable_with_s0: false

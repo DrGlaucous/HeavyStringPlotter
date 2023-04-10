@@ -124,12 +124,16 @@ void storePositionInEEPROM() {
   }
 }
 
+//coordinate stuff, converts from 2 string lengths to cartesian
+//currentLeftSteps is the steps it took to make the current string length
 void setOrigo() {
+  //convert back from steps to length
     float currentLeft  = currentLeftSteps / stepsPerMM;
     float currentRight = currentRightSteps / stepsPerMM;
-    float tmp1 = (currentRight*currentRight-disparity*disparity-currentLeft*currentLeft);
-    float tmp2 = (-2*currentLeft*disparity);
-    float a = acos(tmp1/tmp2);    
+
+    float tmp1 = (currentRight*currentRight-disparity*disparity-currentLeft*currentLeft);//calculate distnace between anchors (a^2-b^2-c^2) (rigth,anchDist,left)
+    float tmp2 = (-2*currentLeft*disparity); //get hypotinuse from left string length
+    float a = acos(tmp1/tmp2);  //get angle from adj/hyp  
     centerX = currentLeft*cos(a);
     centerY = currentLeft*sin(a);
 }

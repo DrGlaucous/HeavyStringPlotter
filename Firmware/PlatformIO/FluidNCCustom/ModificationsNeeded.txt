@@ -56,6 +56,58 @@ if a left and right config message is sent, we will snap our head to one of the 
 
 
 
+CircumferenceI: 125.6637
+CircumferenceO: 314.1592 
+StringLength: 500
+
+200 steps per CircumferenceI.
+
+125.6637/200 * 1/16 = mm/step
+101.859168 steps/mm
+
+Dynamic Step Rate:
+
+to init: set inner and outter spool diameters
+calc steps/mm for each of those dimensions, store them
+
+1: GetStringLength
+2: Map Diameter inversely (longest strlen = smallest cirfumference)
+	steps/mm for this instant = [min1:0, max1:totalStrLen || min2: StepsCircumferenceO, max2,StepsCircumferenceI, strlen]
+
+
+
+
+
+
+
+
+
+
+
+Question:
+
+I am trying to adapt fluidNC to work with a hanging plotter (A.K.A "polargraph").
+
+The plotter is one unit that contains the marker, motors, control board, and battery. It hangs from 2 anchor points that are secured to the edges of the drawing surface (like a whiteboard or chalkboard).
+There is already a kinematic template in the firmware for this type of machine, but there are a few things that need to be added before it is useable for my application.
+
+The code here relies on a pre-determined anchor spacing to be set in the configuration file, but I am planning to use anchors that will vary every time I set up the machine.
+There is a homing routine that can be used to tell the machine where it's at without any pre-determined values in the config, but I don't know how to make this routine accessible from the fluidNC terminal.
+(I need to send the machine some sort of code to tell it to switch this on/off/log values)
+The process of homing itself needs some degree of user feedback, similar to manual bed leveling in Marlin, where you tell the machine when the tooltip is touching the bed.
+Similarly, I need to tell the machine that its strings are in the right spot.
+
+I've determined I could re-use the homing sequence section of the kinematics class to tell the machine it's at the right position for each axis. (For example, when the plotter is hanging right below its left anchor point, I can send the "home X" command, and the kinematics section would then be cued to do some assumptions and number crunching, same for home "Y")
+
+The one snag I still have is where to implement direct/indirect motor control. This is needed to get the plotter to the right spot and have the machine still know how far it's reeled in/out each motor. Because the positions aren't fully calibrated yet, cartesian positioning cannot be used here.
+I want to send a command to the machine to tell it that the jog commands I send are to control individual motors directly instead of being run through the kinematics section. The closest example I found of this is from Marlin's "G6" command (https://marlinfw.org/docs/gcode/G006.html). I couldn't find anything for linuxCNC that did this, at least not that I understood.
+
+If this type of positioning is not supported, where would be the best way to implement it? Should it be a M, G, or $ code? I could also use the "home Z" command to toggle this feature on and off directly in the kinematics section, but this seems dirty, especially since it would be toggle activated and not argument based.
+
+
+For reference, the routine I wish to implement is explained and demonstrated here:
+https://www.hackster.io/fredrikstridsman/stringent-the-15-wall-plotter-d965ca
+
 
 
 

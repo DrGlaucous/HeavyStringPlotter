@@ -56,5 +56,16 @@ namespace Kinematics {
         _system->init_position();
     }
 
+    //AFTER-MARKET: runs general things from calling function, exposed to outside
+    bool Kinematics::run_setting_process(int settingNo, int actionNo){
+        Assert(_system != nullptr, "run_setting_process: Kinematics system missing.");
+        return _system->run_setting_process(settingNo, actionNo);
+    }
+
+    const char* Kinematics::getName(void)//AFTER-MARKET, returns name() from _system
+    {
+        return _system->name();
+    }
+
     Kinematics::~Kinematics() { delete _system; }
 };

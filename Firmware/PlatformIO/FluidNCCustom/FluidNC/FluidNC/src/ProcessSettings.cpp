@@ -748,6 +748,93 @@ static Error setReportInterval(const char* value, WebUI::AuthenticationLevel aut
     return Error::Ok;
 }
 
+//custom plotter setting command(s)
+//sets Direct Motor Control
+static Error setDirectMotorControl(const char* value, WebUI::AuthenticationLevel auth_level, Channel& out)
+{
+    
+
+    if(value)
+    {
+        char*    endptr;
+        uint32_t intValue = strtol(value, &endptr, 10);
+
+        if (endptr == value || *endptr != '\0') {
+            return Error::BadNumberFormat;
+        }
+
+        if(intValue)//parse input, set to either true or false depending
+            config->_axes->_directMotorControl = true;
+        else
+            config->_axes->_directMotorControl = false;
+    }
+    else//no argument toggles it
+        config->_axes->_directMotorControl = !config->_axes->_directMotorControl;
+
+    log_info("DMC Setting updated to: " << config->_axes->_directMotorControl);
+
+    return Error::Ok;
+}
+
+//calls kennematic calibration functions
+static Error calibrateGondolaLocation(const char* value, WebUI::AuthenticationLevel auth_level, Channel& out)
+{
+    log_info("NAME: " << config->_kinematics->getName());
+
+    //must have an argument
+    if(!value)
+        return Error::InvalidValue;
+
+    char*    endptr;
+    uint32_t intValue = strtol(value, &endptr, 10);
+
+    if (endptr == value || *endptr != '\0') {
+        return Error::BadNumberFormat;
+    }
+
+    if(!strcmp(config->_kinematics->getName(), "WallPlotter") )
+    {
+        config->_kinematics->run_setting_process(1, intValue);
+        return Error::Ok;
+    }
+    else
+    {
+        log_error("Error: Your configuration, " << config->_kinematics->getName() << " is incompatible with this command")
+        return Error::SettingDisabled;
+    }
+
+
+}
+
+static Error setAnchor(const char* value, WebUI::AuthenticationLevel auth_level, Channel& out)
+{
+    log_info("NAME: " << config->_kinematics->getName());
+
+    //must have an argument
+    if(!value)
+        return Error::InvalidValue;
+
+    char*    endptr;
+    uint32_t intValue = strtol(value, &endptr, 10);
+
+    if (endptr == value || *endptr != '\0') {
+        return Error::BadNumberFormat;
+    }
+    if(!strcmp(config->_kinematics->getName(), "WallPlotter") )
+    {
+        config->_kinematics->run_setting_process(2, intValue);
+        return Error::Ok;
+    }
+    else
+    {
+        log_error("Error: Your configuration, " << config->_kinematics->getName() << " is incompatible with this command")
+        return Error::SettingDisabled;
+    }
+
+}
+
+
+
 // Commands use the same syntax as Settings, but instead of setting or
 // displaying a persistent value, a command causes some action to occur.
 // That action could be anything, from displaying a run-time parameter
@@ -803,6 +890,14 @@ void make_user_commands() {
 
     new UserCommand("30", "FakeMaxSpindleSpeed", fakeMaxSpindleSpeed, notIdleOrAlarm);
     new UserCommand("32", "FakeLaserMode", fakeLaserMode, notIdleOrAlarm);
+
+    //custom for hanging plot gantry $DMC=[0/1]
+    new UserCommand("DMC", "DMC/Enable", setDirectMotorControl, anyState);
+
+    //Calibrate Location (hanging plotter exclusive) $CGL=[0/1]
+    new UserCommand("CGL", "CalibrateGondola/Location", calibrateGondolaLocation,notIdleOrAlarm);
+    new UserCommand("SAD", "SetAnchor/Distance", setAnchor,notIdleOrAlarm);
+
 };
 
 // normalize_key puts a key string into canonical form -
